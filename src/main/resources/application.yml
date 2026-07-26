@@ -16,4 +16,4 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:a_very_long_default_secret_key_for_jwt_which_should_be_secure}
-  expiration: ${JWT_EXPIRATION:86400000} # default to 24 hours in milliseconds
+  expiration: ${JWT_EXPIRATION:3600000}

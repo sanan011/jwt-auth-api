@@ -1,6 +1,7 @@
 package com.example.jwtauthapi.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,18 +59,12 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             extractAllClaims(token);
-            return !isTokenExpired(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw e; // Specifically rethrow expired tokens so callers can distinguish
         } catch (Exception e) {
-            return false;
+            return false; // Other errors (invalid signature, malformed, etc.)
         }
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
     }
 
     private SecretKey getSigningKey() {

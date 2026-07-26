@@ -1,5 +1,6 @@
 package com.example.jwtauthapi.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,9 +58,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } catch (ExpiredJwtException e) {
+            logger.warn("Token has expired: " + e.getMessage());
+            request.setAttribute("expiredMessage", "Token has expired");
         } catch (Exception e) {
-            // Log the exception (e.g. expired token, invalid signature) and move on to the next filter
-            // The authentication will remain null, resulting in a 401 response later down the chain
             logger.error("Cannot set user authentication: " + e.getMessage());
         }
 

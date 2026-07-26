@@ -53,4 +53,14 @@ public class AuthService {
 
         return new AuthResponse(token);
     }
+
+    public AuthResponse refresh(String token) {
+        if (jwtUtil.validateToken(token)) {
+            String username = jwtUtil.extractUsername(token);
+            User user = userRepository.findByUsername(username).orElseThrow();
+            String newToken = jwtUtil.generateToken(username, user.getRole().name());
+            return new AuthResponse(newToken);
+        }
+        throw new RuntimeException("Invalid token");
+    }
 }
