@@ -13,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Endpoints for user registration and authentication")
 public class AuthController {
 
     private final AuthService authService;
@@ -25,18 +29,21 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Register a new user", description = "Creates a new user account with default USER role")
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully"));
     }
 
+    @Operation(summary = "Login user", description = "Authenticates user and returns a JWT token")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Refresh JWT token", description = "Provides a new JWT token if the current one is valid")
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request) {
         /*
